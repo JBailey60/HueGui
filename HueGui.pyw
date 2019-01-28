@@ -1,10 +1,12 @@
- #Graphical Interface to control Phillips Hue Lights
+ #Graphical Interface to control Phillips Hue Lights with Pandora audio
  #username: fQtHmWflCsBXEfznfFI-NLw0DI5nmxCO7Tzh-zlQ
  #ip-address: http://192.168.0.2
+ #client.get_station('4168046722632754502')
 
-
+import asyncio
 from tkinter import *
 from phue import *
+from pydora import player
 
 class Application(Frame):
     """A row of buttons to control your lights"""
@@ -34,7 +36,8 @@ class Application(Frame):
         self.bttn_white["command"] = self.bttn_Focus
         self.bttn_white.grid(rowspan=2, row = 0, column=0, sticky = ("N","S","E","W"))
 
-        self.bttn_red = Button(self, text = "Red", bg="red", fg = "white", font="BOLD")
+        self.bttn_red = Button(self, text = "Date Night", bg="red", fg = "white", font="BOLD")
+        self.bttn_red["command"] = self.bttn_Date
         self.bttn_red.grid(rowspan=2, row = 0, column=1, sticky = ("N","S","E","W"))
 
         self.bttn_green = Button(self, text = "Green", bg = "green", font="BOLD")
@@ -62,9 +65,9 @@ class Application(Frame):
             self.b.set_light(light,'bri',bri)
 
 
-##        self.bttn_high_bri = Button(self, text = "To Dark", bg = "gray")
-##        self.bttn_high_bri["command"] = self.high_bri
-##        self.bttn_high_bri.grid(row = 1, column=1, sticky = ("N","S","E","W"))
+#        self.bttn_high_bri = Button(self, text = "To Dark", bg = "gray")
+#        self.bttn_high_bri["command"] = self.high_bri
+#        self.bttn_high_bri.grid(row = 1, column=1, sticky = ("N","S","E","W"))
 
 
     def high_bri(self):
@@ -76,10 +79,10 @@ class Application(Frame):
                 bri = 255         
             self.b.set_light(light,'bri',bri)
 
-##    def bttn_next_fun(self):
-##        self.bttn_off = Button(self, text = "Off", bg = "black", fg="white", font="BOLD")
-##        self.bttn_off["command"] = self.bttn_off_fun
-##        self.bttn_off.grid(row = 1, column=1, sticky = ("N","S","E","W"))
+#    def bttn_next_fun(self):
+#        self.bttn_off = Button(self, text = "Off", bg = "black", fg="white", font="BOLD")
+#        self.bttn_off["command"] = self.bttn_off_fun
+#        self.bttn_off.grid(row = 1, column=1, sticky = ("N","S","E","W"))
 
     def bttn_onoff(self):
         if self.onoff == True:
@@ -94,6 +97,9 @@ class Application(Frame):
     def bttn_Focus(self):
         self.b.run_scene('Living room', 'Concentrate',transition_time=30)
 
+    def bttn_Date(self):
+        self.b.run_scene('Living room', 'Red, Blue, Purple', transition_time=30)
+        player.PlayerApp().run()
 
 
 
