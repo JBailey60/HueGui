@@ -1,0 +1,105 @@
+ #Graphical Interface to control Phillips Hue Lights with Pandora audio
+ #username: fQtHmWflCsBXEfznfFI-NLw0DI5nmxCO7Tzh-zlQ
+ #ip-address: http://192.168.0.2
+ #client.get_station('4168046722632754502')
+
+from tkinter import *
+from phue import *
+
+class Application(Frame):
+    """A row of buttons to control your lights"""
+    b = Bridge(ip='192.168.0.2', username='fQtHmWflCsBXEfznfFI-NLw0DI5nmxCO7Tzh-zlQ')
+    lights = b.get_light_objects('id')
+    onoff = True
+
+
+    def __init__(self, master):
+        """ Initialize the Frame. """
+        super(Application, self).__init__(master) 
+        master.columnconfigure(0, weight=1)   
+        master.rowconfigure(0, weight = 1)
+        self.grid(sticky="news")
+        self.create_widgets()
+        
+
+    def create_widgets(self):
+        for i in range(0,3):
+           self.columnconfigure(i, weight=2)
+        for i in range(0,4):
+            self.rowconfigure(i, weight=2)
+
+        
+        
+        self.bttn_white = Button(self, text = "Focus", bg="white", font="BOLD")
+        self.bttn_white["command"] = self.bttn_Focus
+        self.bttn_white.grid(rowspan=2, row = 0, column=0, sticky = ("N","S","E","W"))
+
+        self.bttn_red = Button(self, text = "Date Night", bg="red", fg = "white", font="BOLD")
+        self.bttn_red["command"] = self.bttn_Date
+        self.bttn_red.grid(rowspan=2, row = 0, column=1, sticky = ("N","S","E","W"))
+
+        self.bttn_green = Button(self, text = "Aurora", bg = "teal", font="BOLD")
+        self.bttn_green["command"] = self.bttn_aura
+        self.bttn_green.grid(rowspan=2,row = 0, column=2, sticky = ("N","S","E","W"))
+
+        self.bttn_low_bri = Button(self, text = "Bri -", bg = "grey", font="BOLD")
+        self.bttn_low_bri["command"] = self.lower_bri
+        self.bttn_low_bri.grid(row = 3, column=0, sticky = ("N","S","E","W"))
+
+        self.bttn_next = Button(self, text = "Bri +", bg = "grey", font="BOLD")
+        self.bttn_next["command"] = self.high_bri
+        self.bttn_next.grid(row = 2, column=0, sticky = ("N","S","E","W"))
+
+        self.bttn_off = Button(self, text = "On/Off", bg = "black", fg="white", font="BOLD")
+        self.bttn_off.grid(rowspan=2, row = 2, column=1, sticky = ("N","S","E","W"))
+        self.bttn_off["command"] = self.bttn_onoff
+
+    def lower_bri(self):
+        """Lowers Brightness of the lights"""
+        for light in self.lights:
+            bri = self.b.get_light(light,'bri')
+            bri = bri - 50
+            if bri < 0:
+                bri = 1
+            self.b.set_light(light,'bri',bri)
+
+    def high_bri(self):
+        """Raises Brightness of the lights"""
+        for light in self.lights:
+            bri = self.b.get_light(light,'bri')
+            bri = bri + 50 
+            if bri > 255:
+                bri = 255         
+            self.b.set_light(light,'bri',bri)
+
+    def bttn_onoff(self):
+        if self.onoff == True:
+            for light in self.lights:
+                self.b.set_light(light,'on',False)
+            self.onoff = False
+        else:
+            for light in self.lights:
+                self.b.set_light(light,'on',True)
+            self.onoff = True
+    
+    def bttn_Focus(self):
+        self.b.run_scene('Living room', 'Concentrate',transition_time=30)
+
+    def bttn_Date(self):
+        self.b.run_scene('Living room', 'Datenight', transition_time=30)
+        self.b.run_scene('Bedroom', 'Datenight')
+
+    def bttn_aura(self):
+        self.b.run_scene('Living room', 'Arctic aurora')
+        self.b.run_scene('Bedroom', 'Arctic aurora')
+
+
+
+
+# main
+root = Tk()
+root.title("Hue Gui")
+#root.geometry("200x150")
+root.attributes('-fullscreen', True)
+app = Application(root)
+root.mainloop()
